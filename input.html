@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>치과 정보 입력 - 치과 광고 콘텐츠 생성기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #f5f7fa;
+            padding-bottom: 60px;
+        }
+
+        /* Sticky Header */
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .back-btn:hover {
+            opacity: 0.8;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 5px 10px;
+            line-height: 1;
+            transition: opacity 0.2s;
+        }
+
+        .menu-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Menu Drawer */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1999;
+        }
+
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-drawer {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .menu-drawer.active {
+            right: 0;
+        }
+
+        .menu-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .menu-items {
+            list-style: none;
+            padding: 0;
+        }
+
+        .menu-item {
+            border-bottom: 1px solid #eee;
+        }
+
+        .menu-item a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 20px;
+            color: #333;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .menu-item a:hover {
+            background: #f5f7fa;
+        }
+
+        .menu-icon {
+            font-size: 24px;
+        }
+
+        /* Progress Indicator */
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+            background: white;
+            margin-bottom: 20px;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+        }
+
+        .progress-dot.active {
+            background: #667eea;
+        }
+
+        /* Form Container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 15px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 15px;
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 13px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        /* Radio/Checkbox Groups */
+        .radio-group, .checkbox-group {
+            display: grid;
+            gap: 12px;
+        }
+
+        .radio-option, .checkbox-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 15px;
+            border: 2px solid #e1e4e8;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-option:hover, .checkbox-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .radio-option input, .checkbox-option input {
+            margin-top: 3px;
+            cursor: pointer;
+        }
+
+        /* Priority Selection Options */
+        .priority-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            border: 2px solid #e1e4e8;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .priority-option:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .priority-option.priority-1 {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .priority-option.priority-2 {
+            border-color: #ffa500;
+            background: #fff8f0;
+        }
+
+        .priority-indicator {
+            min-width: 32px;
+            height: 32px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .priority-option.priority-1 .priority-indicator {
+            border-color: #667eea;
+            color: #667eea;
+            background: white;
+        }
+
+        .priority-option.priority-1 .priority-indicator::after {
+            content: '○';
+        }
+
+        .priority-option.priority-2 .priority-indicator {
+            border-color: #ffa500;
+            color: #ffa500;
+            background: white;
+        }
+
+        .priority-option.priority-2 .priority-indicator::after {
+            content: '△';
+        }
+
+        .option-content {
+            flex: 1;
+        }
+
+        .option-label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .option-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Trust Score Sliders */
+        .slider-group {
+            margin-bottom: 25px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .slider-value {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .slider-description {
+            font-size: 13px;
+            color: #ff8c00;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            font-weight: 500;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .slider-description::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #ffa500;
+            font-weight: bold;
+        }
+
+        /* Section Description Box */
+        .section-description {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3d6 100%);
+            border-left: 4px solid #ffa500;
+            padding: 15px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #664d00;
+            line-height: 1.7;
+        }
+
+        .section-description strong {
+            color: #ff8c00;
+            font-weight: 600;
+        }
+
+        .section-description::before {
+            content: '💡 ';
+            font-size: 16px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e1e4e8;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .form-section {
+                padding: 20px;
+            }
+
+            .header-title {
+                font-size: 16px;
+            }
+
+            .back-btn {
+                font-size: 14px;
+            }
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .footer-info-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .footer-info-icon {
+            font-size: 18px;
+        }
+
+        .footer-brand {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .footer-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        .footer-admin-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .footer-admin-btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .footer {
+                padding: 30px 15px;
+                margin-top: 40px;
+            }
+
+            .footer-title {
+                font-size: 20px;
+            }
+
+            .footer-info {
+                font-size: 14px;
+            }
+
+            .footer-brand {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Header -->
+    <div class="top-header">
+        <div class="header-left">
+            <a href="index.html" class="back-btn">← 처음으로</a>
+            <span class="header-title">🦷 치과 광고 콘텐츠 생성기</span>
+        </div>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    </div>
+
+    <!-- Menu Overlay -->
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+
+    <!-- Menu Drawer -->
+    <div class="menu-drawer" id="menuDrawer">
+        <div class="menu-header">메뉴</div>
+        <ul class="menu-items">
+            <li class="menu-item">
+                <a href="index.html">
+                    <span class="menu-icon">🏠</span>
+                    <span>처음으로</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="cases.html">
+                    <span class="menu-icon">📂</span>
+                    <span>저장된 케이스</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a href="#guide">
+                    <span class="menu-icon">📖</span>
+                    <span>사용 가이드</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="progress-indicator">
+        <div class="progress-dot active"></div>
+        <div class="progress-dot"></div>
+        <div class="progress-dot"></div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="container">
+        <form id="dentalForm">
+            <!-- Section 1: Basic Info -->
+            <div class="form-section">
+                <h2 class="section-title">1. 기본 정보</h2>
+                <div class="section-description">
+                    광고 콘텐츠 생성을 위한 <strong>치과의 기본 정보</strong>를 입력해주세요.
+                    정확한 정보를 입력할수록 더 맞춤화된 광고 전략을 제공받을 수 있습니다.
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">치과 이름</label>
+                    <input type="text" name="clinicName" class="form-input" placeholder="예: 서울밝은치과" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">원장 이름</label>
+                    <input type="text" name="directorName" class="form-input" placeholder="예: 김철수" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">지역</label>
+                    <input type="text" name="location" class="form-input" placeholder="예: 서울 강남구" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">주요 진료 분야</label>
+                    <input type="text" name="specialty" class="form-input" placeholder="예: 임플란트, 교정, 심미치료">
+                </div>
+            </div>
+
+            <!-- Section 2: Diagnosis -->
+            <div class="form-section">
+                <h2 class="section-title">2. 현재 상태 진단</h2>
+                <div class="section-description">
+                    치과의 <strong>현재 매출 단계</strong>와 <strong>원장 스타일</strong>을 진단합니다.
+                    각 항목에서 <strong>가장 가까운 것을 1순위(○)</strong>로, <strong>두 번째로 가까운 것을 2순위(△)</strong>로 선택해주세요.
+                    항목을 클릭할 때마다 순서가 변경됩니다.
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">현재 매출 단계 (1순위와 2순위를 선택하세요)</label>
+                    <div class="radio-group" id="revenueStageGroup">
+                        <div class="priority-option" data-value="1" onclick="togglePriority('revenueStage', '1')">
+                            <div class="priority-indicator"></div>
+                            <div class="option-content">
+                                <div class="option-label">1형 - 수익 정체·감소</div>
+                                <div class="option-desc">매출이 정체되거나 감소하는 단계</div>
+                            </div>
+                        </div>
+                        <div class="priority-option" data-value="2" onclick="togglePriority('revenueStage', '2')">
+                            <div class="priority-indicator"></div>
+                            <div class="option-content">
+                                <div class="option-label">2형 - 수익 유지·불안정</div>
+                                <div class="option-desc">수익은 유지되지만 불안정한 단계</div>
+                            </div>
+                        </div>
+                        <div class="priority-option" data-value="3" onclick="togglePriority('revenueStage', '3')">
+                            <div class="priority-indicator"></div>
+                            <div class="option-content">
+                                <div class="option-label">3형 - 원장 과부하</div>
+                                <div class="option-desc">원장의 업무 부담이 과중한 단계</div>
+                            </div>
+                        </div>
+                        <div class="priority-option" data-value="4" onclick="togglePriority('revenueStage', '4')">
+                            <div class="priority-indicator"></div>
+                            <div class="option-content">
+                                <div class="option-label">4형 - 수익 안정·확장 준비</div>
+                                <div class="option-desc">수익이 안정적이며 확장을 준비하는 단계</div>
+                            </div>
+                        </div>
+                        <div class="priority-option" data-value="5" onclick="togglePriority('revenueStage', '5')">
+                            <div class="priority-indicator"></div>
+                            <div class="option-content">
+                                <div class="option-label">5형 - 고수익·브랜드형</div>
+                                <div class="option-desc">고수익을 내며 브랜드 가치가 높은 단계</div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="revenueStage1" id="revenueStage1" required>
+                    <input type="hidden" name="revenueStage2" id="revenueStage2">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">원장 스타일 (1순위와 2순위를 선택하세요)</label>
+                    <div class="radio-group" id="directorStyleGroup">
+                        <div class="priority-option" data-value="A" onclick="togglePriority('directorStyle', 'A')">
+                            <div class="priority-indicator"></div>
+                            <div class="option-content">
+                                <div class="option-label">A형 - 결단·속도형</div>
+                                <div class="option-desc">빠른 결정과 실행을 중시하는 유형</div>
+                            </div>
+                        </div>
+                        <div class="priority-option" data-value="B" onclick="togglePriority('directorStyle', 'B')">
+                            <div class="priority-indicator"></div>
+                            <div class="option-content">
+                                <div class="option-label">B형 - 구조·안정형</div>
+                                <div class="option-desc">체계와 안정성을 중시하는 유형</div>
+                            </div>
+                        </div>
+                        <div class="priority-option" data-value="C" onclick="togglePriority('directorStyle', 'C')">
+                            <div class="priority-indicator"></div>
+                            <div class="option-content">
+                                <div class="option-label">C형 - 팀·교육형</div>
+                                <div class="option-desc">팀워크와 교육을 중시하는 유형</div>
+                            </div>
+                        </div>
+                        <div class="priority-option" data-value="D" onclick="togglePriority('directorStyle', 'D')">
+                            <div class="priority-indicator"></div>
+                            <div class="option-content">
+                                <div class="option-label">D형 - 수익·경영형</div>
+                                <div class="option-desc">수익성과 경영 효율을 중시하는 유형</div>
+                            </div>
+                        </div>
+                        <div class="priority-option" data-value="E" onclick="togglePriority('directorStyle', 'E')">
+                            <div class="priority-indicator"></div>
+                            <div class="option-content">
+                                <div class="option-label">E형 - 환자·신뢰형</div>
+                                <div class="option-desc">환자 경험과 신뢰를 최우선하는 유형</div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="directorStyle1" id="directorStyle1" required>
+                    <input type="hidden" name="directorStyle2" id="directorStyle2">
+                </div>
+            </div>
+
+            <!-- Section 3: Trust Scores -->
+            <div class="form-section">
+                <h2 class="section-title">3. DF-AI 신뢰 점수</h2>
+                <div class="section-description">
+                    치과의 <strong>환자 상담 및 진료 품질</strong>을 평가하는 지표입니다.
+                    각 항목을 <strong>0점(낮음)부터 100점(높음)</strong>까지 슬라이더로 조절하여 현재 치과의 수준을 솔직하게 평가해주세요.
+                    확실하지 않으면 <strong>50점(중간)</strong>으로 설정하세요.
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>공감 (Empathy)</span>
+                        <span class="slider-value" id="empathyValue">50</span>
+                    </div>
+                    <p class="slider-description">환자의 감정과 불안을 얼마나 잘 이해하고 공감하는가?</p>
+                    <input type="range" name="empathy" class="slider" min="0" max="100" value="50"
+                           oninput="updateSlider('empathy', this.value)">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>이해 (Understanding)</span>
+                        <span class="slider-value" id="understandingValue">50</span>
+                    </div>
+                    <p class="slider-description">치료 내용을 환자가 이해하기 쉽게 설명하는가?</p>
+                    <input type="range" name="understanding" class="slider" min="0" max="100" value="50"
+                           oninput="updateSlider('understanding', this.value)">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>결정 자율성 (Decision Autonomy)</span>
+                        <span class="slider-value" id="decisionValue">50</span>
+                    </div>
+                    <p class="slider-description">환자에게 치료 선택권을 주고 의사결정을 존중하는가?</p>
+                    <input type="range" name="decision" class="slider" min="0" max="100" value="50"
+                           oninput="updateSlider('decision', this.value)">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>가치 전달 (Value Delivery)</span>
+                        <span class="slider-value" id="valueValue">50</span>
+                    </div>
+                    <p class="slider-description">치료의 장기적 가치와 효과를 잘 전달하는가?</p>
+                    <input type="range" name="value" class="slider" min="0" max="100" value="50"
+                           oninput="updateSlider('value', this.value)">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>신뢰 관계 (Trust Relationship)</span>
+                        <span class="slider-value" id="trustValue">50</span>
+                    </div>
+                    <p class="slider-description">환자와 장기적 신뢰 관계를 구축하고 관리하는가?</p>
+                    <input type="range" name="trust" class="slider" min="0" max="100" value="50"
+                           oninput="updateSlider('trust', this.value)">
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>공간/감성 통제 (Space/Emotion Control)</span>
+                        <span class="slider-value" id="spaceValue">50</span>
+                    </div>
+                    <p class="slider-description">진료 환경과 분위기를 환자 친화적으로 관리하는가?</p>
+                    <input type="range" name="space" class="slider" min="0" max="100" value="50"
+                           oninput="updateSlider('space', this.value)">
+                </div>
+            </div>
+
+            <!-- Section 4: Philosophy -->
+            <div class="form-section">
+                <h2 class="section-title">4. 치과 철학 및 특징</h2>
+                <div class="section-description">
+                    치과만의 <strong>철학과 차별화 포인트</strong>를 작성해주세요.
+                    이 내용이 광고 콘텐츠의 핵심 메시지가 됩니다. 구체적으로 작성할수록 좋습니다.
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">치과의 핵심 가치와 철학</label>
+                    <textarea name="philosophy" class="form-textarea"
+                              placeholder="예: 환자 중심의 진료, 평생 구강 건강 파트너"
+                              maxlength="500" oninput="updateCharCount('philosophy', this)"></textarea>
+                    <div class="char-counter">
+                        <span id="philosophyCount">0</span>/500
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">차별화 포인트</label>
+                    <textarea name="differentiation" class="form-textarea"
+                              placeholder="예: 첨단 장비, 무통 치료, 1:1 맞춤 상담"
+                              maxlength="500" oninput="updateCharCount('differentiation', this)"></textarea>
+                    <div class="char-counter">
+                        <span id="differentiationCount">0</span>/500
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: Content Preferences -->
+            <div class="form-section">
+                <h2 class="section-title">5. 콘텐츠 선호도</h2>
+                <div class="section-description">
+                    <strong>선호하는 광고 채널과 콘텐츠 유형</strong>을 선택해주세요.
+                    중복 선택이 가능하며, 선택한 채널과 유형에 최적화된 광고 콘텐츠가 생성됩니다.
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">선호하는 광고 콘텐츠 채널 (중복 선택 가능)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="channel" value="naver">
+                            <div class="option-content">
+                                <div class="option-label">네이버 블로그/카페</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="channel" value="instagram">
+                            <div class="option-content">
+                                <div class="option-label">인스타그램</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="channel" value="youtube">
+                            <div class="option-content">
+                                <div class="option-label">유튜브</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="channel" value="facebook">
+                            <div class="option-content">
+                                <div class="option-label">페이스북</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="channel" value="local">
+                            <div class="option-content">
+                                <div class="option-label">지역 커뮤니티</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">선호하는 콘텐츠 유형 (중복 선택 가능)</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="content" value="educational">
+                            <div class="option-content">
+                                <div class="option-label">교육/정보성</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="content" value="cases">
+                            <div class="option-content">
+                                <div class="option-label">치료 사례</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="content" value="story">
+                            <div class="option-content">
+                                <div class="option-label">환자 후기/스토리</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="content" value="promotion">
+                            <div class="option-content">
+                                <div class="option-label">프로모션/이벤트</div>
+                            </div>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" name="content" value="facility">
+                            <div class="option-content">
+                                <div class="option-label">시설/장비 소개</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-btn">🚀 광고 콘텐츠 전략 생성하기</button>
+        </form>
+    </div>
+
+    <script>
+        // Toggle menu
+        function toggleMenu() {
+            const drawer = document.getElementById('menuDrawer');
+            const overlay = document.getElementById('menuOverlay');
+            drawer.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        // Update slider values
+        function updateSlider(name, value) {
+            document.getElementById(name + 'Value').textContent = value;
+        }
+
+        // Update character count
+        function updateCharCount(name, element) {
+            document.getElementById(name + 'Count').textContent = element.value.length;
+        }
+
+        // Priority selection state
+        const priorityState = {
+            revenueStage: {},
+            directorStyle: {}
+        };
+
+        // Toggle priority selection (none -> priority-1 -> priority-2 -> none)
+        function togglePriority(group, value) {
+            const element = document.querySelector(`#${group}Group .priority-option[data-value="${value}"]`);
+
+            // Get current priority
+            let currentPriority = null;
+            if (element.classList.contains('priority-1')) currentPriority = 1;
+            else if (element.classList.contains('priority-2')) currentPriority = 2;
+
+            // Remove current class
+            element.classList.remove('priority-1', 'priority-2');
+
+            // Cycle through states: none -> 1 -> 2 -> none
+            if (currentPriority === null) {
+                // Check if priority-1 is already taken
+                const priority1Exists = document.querySelector(`#${group}Group .priority-option.priority-1`);
+                if (!priority1Exists) {
+                    element.classList.add('priority-1');
+                    priorityState[group][value] = 1;
+                } else {
+                    // If priority-1 exists, check priority-2
+                    const priority2Exists = document.querySelector(`#${group}Group .priority-option.priority-2`);
+                    if (!priority2Exists) {
+                        element.classList.add('priority-2');
+                        priorityState[group][value] = 2;
+                    }
+                }
+            } else if (currentPriority === 1) {
+                // Change to priority-2
+                element.classList.add('priority-2');
+                priorityState[group][value] = 2;
+            } else if (currentPriority === 2) {
+                // Remove (back to none)
+                delete priorityState[group][value];
+            }
+
+            // Update hidden inputs
+            updatePriorityInputs(group);
+        }
+
+        // Update hidden inputs with priority values
+        function updatePriorityInputs(group) {
+            let priority1Value = '';
+            let priority2Value = '';
+
+            // Find priority-1 and priority-2
+            const options = document.querySelectorAll(`#${group}Group .priority-option`);
+            options.forEach(option => {
+                const value = option.getAttribute('data-value');
+                if (option.classList.contains('priority-1')) {
+                    priority1Value = value;
+                } else if (option.classList.contains('priority-2')) {
+                    priority2Value = value;
+                }
+            });
+
+            // Update hidden inputs
+            document.getElementById(`${group}1`).value = priority1Value;
+            document.getElementById(`${group}2`).value = priority2Value;
+        }
+
+        // Handle form submission
+        document.getElementById('dentalForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Validate priority selections
+            const revenueStage1 = document.getElementById('revenueStage1').value;
+            const directorStyle1 = document.getElementById('directorStyle1').value;
+
+            if (!revenueStage1) {
+                alert('현재 매출 단계의 1순위를 선택해주세요.');
+                return;
+            }
+
+            if (!directorStyle1) {
+                alert('원장 스타일의 1순위를 선택해주세요.');
+                return;
+            }
+
+            const formData = new FormData(this);
+            const data = {
+                createdAt: new Date().toISOString()
+            };
+
+            // Collect form data
+            for (let [key, value] of formData.entries()) {
+                if (key === 'channel' || key === 'content') {
+                    if (!data[key]) data[key] = [];
+                    data[key].push(value);
+                } else {
+                    data[key] = value;
+                }
+            }
+
+            // 샘플이 아닌 일반 케이스임을 명시
+            // (sampleDescription 필드가 없으면 샘플이 아님)
+            // 이전 샘플 데이터를 완전히 덮어쓰기 위해 명시적으로 제거
+            delete data.sampleDescription;
+
+            // Save to localStorage
+            localStorage.setItem('dentalFormData', JSON.stringify(data));
+
+            // Redirect to loading page
+            window.location.href = 'loading.html';
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-title">심재우 대표</div>
+            <div class="footer-info">
+                <div class="footer-info-item">
+                    <span class="footer-info-icon">📞</span>
+                    <a href="tel:01023975734" class="footer-link">010-2397-5734</a>
+                </div>
+                <div class="footer-info-item">
+                    <span class="footer-info-icon">📧</span>
+                    <a href="mailto:jaiwshim@gmail.com" class="footer-link">jaiwshim@gmail.com</a>
+                </div>
+            </div>
+            <div class="footer-brand">덴탈 클리닉 파인더</div>
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <a href="user-guide.html" class="footer-admin-btn">📖 사용자 가이드</a>
+                <a href="admin-dashboard.html" class="footer-admin-btn">🎛️ 관리자 대시보드</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

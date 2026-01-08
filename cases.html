@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>저장된 케이스 - 치과 광고 콘텐츠 생성기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #f5f7fa;
+            padding-bottom: 60px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header-left p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .empty-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .primary-btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .case-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+
+        .case-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .case-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .case-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .case-date {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .case-info {
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .trust-score {
+            display: inline-block;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .case-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .action-btn.delete {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .action-btn.delete:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .cases-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-left h1 {
+                font-size: 24px;
+            }
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            margin-top: 60px;
+            text-align: center;
+        }
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .footer-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+        .footer-info-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .footer-brand {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .footer-link {
+            color: white;
+            text-decoration: none;
+        }
+        .footer-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        .footer-admin-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .footer-admin-btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>📂 저장된 케이스</h1>
+                <p>이전에 생성한 광고 콘텐츠 전략을 확인하세요</p>
+            </div>
+            <a href="index.html" class="back-btn">← 처음으로</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="caseList"></div>
+    </div>
+
+    <script>
+        function loadCases() {
+            const caseList = document.getElementById('caseList');
+            const cases = JSON.parse(localStorage.getItem('dentalCases') || '[]');
+
+            if (cases.length === 0) {
+                caseList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <h2>저장된 케이스가 없습니다</h2>
+                        <p>새로운 케이스를 생성하고 결과를 저장해보세요</p>
+                        <a href="input.html" class="primary-btn">🚀 새로 시작하기</a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort by date (newest first)
+            cases.sort((a, b) => new Date(b.savedAt || b.createdAt) - new Date(a.savedAt || a.createdAt));
+
+            const casesGrid = document.createElement('div');
+            casesGrid.className = 'cases-grid';
+
+            cases.forEach((caseData, index) => {
+                const card = createCaseCard(caseData, index);
+                casesGrid.appendChild(card);
+            });
+
+            caseList.appendChild(casesGrid);
+        }
+
+        function createCaseCard(caseData, index) {
+            const card = document.createElement('div');
+            card.className = 'case-card';
+
+            // Calculate average trust score
+            const avgTrust = calculateAvgTrust(caseData);
+            const stageText = getStageText(caseData.revenueStage);
+            const styleText = getStyleText(caseData.directorStyle);
+
+            // Format date
+            const date = new Date(caseData.savedAt || caseData.createdAt);
+            const dateStr = date.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            card.innerHTML = `
+                <div class="case-header">
+                    <div class="case-name">${caseData.clinicName || '이름 없는 치과'}</div>
+                    <div class="case-date">${dateStr}</div>
+                </div>
+                <div class="case-info">
+                    <div class="info-row">
+                        <span class="info-label">지역</span>
+                        <span class="info-value">${caseData.location || '-'}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">매출 단계</span>
+                        <span class="info-value">${stageText}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">원장 스타일</span>
+                        <span class="info-value">${styleText}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">평균 신뢰 점수</span>
+                        <span class="trust-score">${avgTrust}점</span>
+                    </div>
+                </div>
+                <div class="case-actions">
+                    <button class="action-btn" onclick="openCase(${index})">📖 열기</button>
+                    <button class="action-btn" onclick="editCase(${index})">✏️ 수정</button>
+                    <button class="action-btn delete" onclick="deleteCase(${index})">🗑️ 삭제</button>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function calculateAvgTrust(caseData) {
+            const scores = [
+                parseInt(caseData.empathy) || 50,
+                parseInt(caseData.understanding) || 50,
+                parseInt(caseData.decision) || 50,
+                parseInt(caseData.value) || 50,
+                parseInt(caseData.trust) || 50,
+                parseInt(caseData.space) || 50
+            ];
+            return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+        }
+
+        function getStageText(stage) {
+            const stages = {
+                '1': '하락기',
+                '2': '정체기',
+                '3': '성장기',
+                '4': '확장기',
+                '5': '프리미엄 브랜드'
+            };
+            return stages[stage] || '-';
+        }
+
+        function getStyleText(style) {
+            const styles = {
+                'conservative': '보수적',
+                'progressive': '진보적',
+                'relationship': '관계 중심',
+                'results': '결과 중심',
+                'empathy': '공감 중심'
+            };
+            return styles[style] || '-';
+        }
+
+        function openCase(index) {
+            const cases = JSON.parse(localStorage.getItem('dentalCases') || '[]');
+            const caseData = cases[index];
+
+            // Load case data into dentalFormData
+            localStorage.setItem('dentalFormData', JSON.stringify(caseData));
+
+            // Redirect to result page
+            window.location.href = 'result.html';
+        }
+
+        function editCase(index) {
+            const cases = JSON.parse(localStorage.getItem('dentalCases') || '[]');
+            const caseData = cases[index];
+
+            // Load case data for editing
+            localStorage.setItem('dentalFormData', JSON.stringify(caseData));
+            localStorage.setItem('editingCaseIndex', index);
+
+            // Redirect to input page
+            window.location.href = 'input.html';
+        }
+
+        function deleteCase(index) {
+            if (!confirm('이 케이스를 삭제하시겠습니까?')) {
+                return;
+            }
+
+            const cases = JSON.parse(localStorage.getItem('dentalCases') || '[]');
+            cases.splice(index, 1);
+            localStorage.setItem('dentalCases', JSON.stringify(cases));
+
+            // Reload the page
+            loadCases();
+        }
+
+        // Initialize
+        loadCases();
+    </script>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-title">심재우 대표</div>
+            <div class="footer-info">
+                <div class="footer-info-item">
+                    <span>📞</span>
+                    <a href="tel:01023975734" class="footer-link">010-2397-5734</a>
+                </div>
+                <div class="footer-info-item">
+                    <span>📧</span>
+                    <a href="mailto:jaiwshim@gmail.com" class="footer-link">jaiwshim@gmail.com</a>
+                </div>
+            </div>
+            <div class="footer-brand">덴탈 클리닉 파인더</div>
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <a href="user-guide.html" class="footer-admin-btn">📖 사용자 가이드</a>
+                <a href="admin-dashboard.html" class="footer-admin-btn">🎛️ 관리자 대시보드</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

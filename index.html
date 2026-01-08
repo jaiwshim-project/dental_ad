@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>치과 광고 콘텐츠 생성기 - 신뢰가 광고 콘텐츠를 대신하다</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px 20px 0 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .menu-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .menu-card.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            grid-column: 1 / -1;
+        }
+
+        .menu-card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .menu-card h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .menu-card p {
+            font-size: 14px;
+            opacity: 0.8;
+            line-height: 1.5;
+        }
+
+        .stats {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .stats-number {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stats-label {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .sample-banner {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
+            border-radius: 16px;
+            padding: 25px 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            50% { box-shadow: 0 8px 20px rgba(255, 107, 157, 0.4); }
+        }
+
+        .sample-banner h3 {
+            color: white;
+            font-size: 20px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .sample-banner p {
+            color: white;
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 15px;
+        }
+
+        .sample-btn {
+            background: white;
+            color: #ff6b9d;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .sample-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .header p {
+                font-size: 16px;
+            }
+
+            .logo {
+                font-size: 60px;
+            }
+
+            .menu-card {
+                padding: 30px 20px;
+            }
+
+            .menu-card h2 {
+                font-size: 20px;
+            }
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            margin-top: auto;
+            width: 100%;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .footer-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .footer-info-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .footer-info-icon {
+            font-size: 18px;
+        }
+
+        .footer-brand {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .footer-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        .footer-admin-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .footer-admin-btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .footer {
+                padding: 30px 15px;
+                margin-top: 40px;
+            }
+
+            .footer-title {
+                font-size: 20px;
+            }
+
+            .footer-info {
+                font-size: 14px;
+            }
+
+            .footer-brand {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🦷</div>
+            <h1>치과 광고 콘텐츠 생성기</h1>
+            <p>신뢰가 광고 콘텐츠를 대신하다</p>
+        </div>
+
+        <!-- Sample Banner -->
+        <div class="sample-banner">
+            <h3>✨ 실제 케이스로 미리 체험하기</h3>
+            <p>화이트서울치과 임영일 원장의 실제 진단 결과를 기반으로 생성된 샘플을 확인해보세요</p>
+            <button class="sample-btn" onclick="loadSampleCase()">🎯 샘플 케이스 보기</button>
+        </div>
+
+        <div class="menu-grid">
+            <a href="input.html" class="menu-card primary" onclick="clearPreviousData(event)">
+                <div class="menu-card-icon">🚀</div>
+                <h2>새로 시작하기</h2>
+                <p>치과 정보를 입력하고 맞춤 광고 콘텐츠 전략을 받아보세요</p>
+            </a>
+
+            <a href="cases.html" class="menu-card">
+                <div class="menu-card-icon">📂</div>
+                <h2>저장된 케이스</h2>
+                <p>이전에 저장한 케이스 확인</p>
+            </a>
+
+            <a href="clear-data.html" class="menu-card">
+                <div class="menu-card-icon">🔧</div>
+                <h2>데이터 초기화</h2>
+                <p>저장된 데이터 확인 및 삭제</p>
+            </a>
+        </div>
+
+        <div class="stats">
+            <div class="stats-number" id="totalCases">0</div>
+            <div class="stats-label">총 생성된 케이스</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-title">심재우 대표</div>
+            <div class="footer-info">
+                <div class="footer-info-item">
+                    <span class="footer-info-icon">📞</span>
+                    <a href="tel:01023975734" class="footer-link">010-2397-5734</a>
+                </div>
+                <div class="footer-info-item">
+                    <span class="footer-info-icon">📧</span>
+                    <a href="mailto:jaiwshim@gmail.com" class="footer-link">jaiwshim@gmail.com</a>
+                </div>
+            </div>
+            <div class="footer-brand">덴탈 클리닉 파인더</div>
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <a href="user-guide.html" class="footer-admin-btn">📖 사용자 가이드</a>
+                <a href="admin-dashboard.html" class="footer-admin-btn">🎛️ 관리자 대시보드</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Sample Data -->
+    <script src="sample-data.js"></script>
+
+    <script>
+        // Load statistics
+        function loadStats() {
+            const cases = JSON.parse(localStorage.getItem('dentalCases') || '[]');
+            document.getElementById('totalCases').textContent = cases.length;
+        }
+
+        // Load sample case
+        function loadSampleCase() {
+            // Save sample data to localStorage
+            localStorage.setItem('dentalFormData', JSON.stringify(sampleData));
+
+            // Redirect to result page
+            window.location.href = 'result.html';
+        }
+
+        // Clear previous data when starting new case
+        function clearPreviousData(event) {
+            // Clear the form data from localStorage
+            localStorage.removeItem('dentalFormData');
+            // Let the link navigate normally
+            return true;
+        }
+
+        loadStats();
+    </script>
+</body>
+</html>
