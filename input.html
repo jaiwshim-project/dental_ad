@@ -550,6 +550,7 @@
                 <a href="index.html">홈</a>
                 <a href="input.html" class="active">생성시작</a>
                 <a href="cases.html">샘플보기</a>
+                <a href="profiles.html">내 프로필</a>
             </nav>
         </div>
     </header>
@@ -869,12 +870,147 @@
                 </div>
             </div>
 
+            <!-- Section 6: Access Password -->
+            <div class="form-section">
+                <h2 class="section-title">6. 접속 비밀번호 입력</h2>
+                <div class="section-description">
+                    <strong>개인정보 보호를 위한 4자리 숫자 비밀번호</strong>를 설정해주세요.
+                    이 비밀번호는 나중에 저장된 프로필에 접근할 때 필요합니다.
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">비밀번호 (4자리 숫자)</label>
+                    <input type="password"
+                           name="accessPassword"
+                           class="form-input"
+                           placeholder="예: 1234"
+                           pattern="[0-9]{4}"
+                           maxlength="4"
+                           required
+                           style="max-width: 200px; font-size: 24px; letter-spacing: 10px; text-align: center;">
+                    <p style="margin-top: 10px; font-size: 14px; color: #666;">
+                        ⚠️ 비밀번호를 잊어버리지 않도록 주의하세요!
+                    </p>
+                </div>
+            </div>
+
             <!-- Submit Button -->
             <button type="submit" class="submit-btn">🚀 광고 콘텐츠 전략 생성하기</button>
         </form>
     </div>
 
     <script>
+        // Auto-fill form if data exists
+        function autoFillForm() {
+            const savedData = localStorage.getItem('dentalFormData');
+            if (!savedData) return;
+
+            const data = JSON.parse(savedData);
+            console.log('자동 입력 시작:', data); // 디버깅용
+
+            // 1. 기본 정보
+            const clinicNameField = document.querySelector('input[name="clinicName"]');
+            const directorNameField = document.querySelector('input[name="directorName"]');
+            const locationField = document.querySelector('input[name="location"]');
+            const specialtyField = document.querySelector('input[name="specialty"]');
+
+            if (data.clinicName && clinicNameField) clinicNameField.value = data.clinicName;
+            if (data.directorName && directorNameField) directorNameField.value = data.directorName;
+            if (data.location && locationField) locationField.value = data.location;
+            if (data.specialty && specialtyField) specialtyField.value = data.specialty;
+
+            // 2. 현재 상태 진단 - 우선순위 선택
+            if (data.revenueStage1) {
+                const elem1 = document.querySelector(`#revenueStageGroup .priority-option[data-value="${data.revenueStage1}"]`);
+                if (elem1) {
+                    elem1.classList.add('priority-1');
+                    priorityState.revenueStage[data.revenueStage1] = 1;
+                    const hiddenInput1 = document.getElementById('revenueStage1');
+                    if (hiddenInput1) hiddenInput1.value = data.revenueStage1;
+                }
+            }
+            if (data.revenueStage2) {
+                const elem2 = document.querySelector(`#revenueStageGroup .priority-option[data-value="${data.revenueStage2}"]`);
+                if (elem2) {
+                    elem2.classList.add('priority-2');
+                    priorityState.revenueStage[data.revenueStage2] = 2;
+                    const hiddenInput2 = document.getElementById('revenueStage2');
+                    if (hiddenInput2) hiddenInput2.value = data.revenueStage2;
+                }
+            }
+
+            if (data.directorStyle1) {
+                const elem1 = document.querySelector(`#directorStyleGroup .priority-option[data-value="${data.directorStyle1}"]`);
+                if (elem1) {
+                    elem1.classList.add('priority-1');
+                    priorityState.directorStyle[data.directorStyle1] = 1;
+                    const hiddenInput1 = document.getElementById('directorStyle1');
+                    if (hiddenInput1) hiddenInput1.value = data.directorStyle1;
+                }
+            }
+            if (data.directorStyle2) {
+                const elem2 = document.querySelector(`#directorStyleGroup .priority-option[data-value="${data.directorStyle2}"]`);
+                if (elem2) {
+                    elem2.classList.add('priority-2');
+                    priorityState.directorStyle[data.directorStyle2] = 2;
+                    const hiddenInput2 = document.getElementById('directorStyle2');
+                    if (hiddenInput2) hiddenInput2.value = data.directorStyle2;
+                }
+            }
+
+            // 3. DF-AI 신뢰 점수 - 슬라이더
+            const sliders = ['empathy', 'understanding', 'decision', 'value', 'trust', 'space'];
+            sliders.forEach(name => {
+                if (data[name]) {
+                    const slider = document.querySelector(`input[name="${name}"]`);
+                    if (slider) {
+                        slider.value = data[name];
+                        updateSlider(name, data[name]);
+                    }
+                }
+            });
+
+            // 4. 치과 철학 - 텍스트
+            if (data.philosophy) {
+                const philosophyField = document.querySelector('textarea[name="philosophy"]');
+                if (philosophyField) {
+                    philosophyField.value = data.philosophy;
+                    updateCharCount('philosophy', philosophyField);
+                }
+            }
+            if (data.differentiation) {
+                const diffField = document.querySelector('textarea[name="differentiation"]');
+                if (diffField) {
+                    diffField.value = data.differentiation;
+                    updateCharCount('differentiation', diffField);
+                }
+            }
+
+            // 5. 콘텐츠 선호도 - 체크박스
+            if (data.channel && Array.isArray(data.channel)) {
+                data.channel.forEach(ch => {
+                    const checkbox = document.querySelector(`input[name="channel"][value="${ch}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
+            if (data.content && Array.isArray(data.content)) {
+                data.content.forEach(ct => {
+                    const checkbox = document.querySelector(`input[name="content"][value="${ct}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
+
+            // 6. 접속 비밀번호
+            if (data.accessPassword) {
+                const passwordField = document.querySelector('input[name="accessPassword"]');
+                if (passwordField) {
+                    passwordField.value = data.accessPassword;
+                }
+            }
+
+            console.log('자동 입력 완료'); // 디버깅용
+        }
+
         // Update slider values
         function updateSlider(name, value) {
             document.getElementById(name + 'Value').textContent = value;
@@ -995,6 +1131,11 @@
 
             // Redirect to loading page
             window.location.href = 'loading.html';
+        });
+
+        // 페이지 로드 시 자동 입력 실행
+        window.addEventListener('DOMContentLoaded', function() {
+            autoFillForm();
         });
     </script>
 

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 프로필 - 치과 광고 콘텐츠 생성기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+            background: #f5f7fa;
+            padding: 80px 0 60px 0;
+        }
+
+        /* Header Navigation Styles */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 15px 30px;
+        }
+
+        .top-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            gap: 12px;
+        }
+
+        .header-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .header-logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .header-nav a {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .header-nav a:hover {
+            color: #667eea;
+        }
+
+        .header-nav a.active {
+            color: #667eea;
+        }
+
+        .header-nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #667eea;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .top-header {
+                padding: 12px 20px;
+            }
+
+            .header-logo-text {
+                font-size: 14px;
+            }
+
+            .header-logo img {
+                height: 30px;
+            }
+
+            .header-nav {
+                gap: 15px;
+            }
+
+            .header-nav a {
+                font-size: 14px;
+            }
+
+            body {
+                padding: 70px 0 60px 0;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .empty-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .primary-btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .profile-number {
+            display: inline-block;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .profile-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            word-break: keep-all;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .profile-location,
+        .profile-date {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .profile-action {
+            text-align: center;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .action-hint {
+            font-size: 13px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .profiles-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-card {
+                padding: 20px;
+            }
+
+            .profile-name {
+                font-size: 18px;
+            }
+
+            .page-header h1 {
+                font-size: 24px;
+            }
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            margin-top: 60px;
+            text-align: center;
+        }
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .footer-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .footer-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+        .footer-info-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .footer-brand {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .footer-link {
+            color: white;
+            text-decoration: none;
+        }
+        .footer-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        .footer-admin-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .footer-admin-btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Header Navigation -->
+    <header class="top-header">
+        <div class="top-header-content">
+            <a href="index.html" class="header-logo">
+                <img src="로고3.png" alt="치과 맞춤식 광고 콘텐츠 생성기 로고">
+                <span class="header-logo-text">치과 맞춤식 광고 콘텐츠 생성기</span>
+            </a>
+            <nav class="header-nav">
+                <a href="index.html">홈</a>
+                <a href="input.html">생성시작</a>
+                <a href="cases.html">샘플보기</a>
+                <a href="profiles.html" class="active">내 프로필</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>내 프로필</h1>
+            <p>저장된 프로필을 선택하면 즉시 광고 콘텐츠를 생성합니다</p>
+        </div>
+
+        <div id="profileList"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-title">치과 광고 콘텐츠 생성기</div>
+            <div class="footer-info">
+                <div class="footer-info-item">
+                    <span>📧</span>
+                    <a href="mailto:dentfinder@naver.com" class="footer-link">dentfinder@naver.com</a>
+                </div>
+                <div class="footer-info-item">
+                    <span>📞</span>
+                    <span>010-2610-7672</span>
+                </div>
+                <div class="footer-info-item">
+                    <span>🌐</span>
+                    <a href="https://www.dentfinder.co.kr" target="_blank" class="footer-link">www.dentfinder.co.kr</a>
+                </div>
+            </div>
+            <a href="admin-dashboard.html" class="footer-admin-btn">관리자 대시보드</a>
+            <div class="footer-brand">덴트파인더</div>
+        </div>
+    </footer>
+
+    <script>
+        function loadProfiles() {
+            const profileList = document.getElementById('profileList');
+            let cases = JSON.parse(localStorage.getItem('dentalCases') || '[]');
+
+            if (cases.length === 0) {
+                profileList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">👤</div>
+                        <h2>저장된 프로필이 없습니다</h2>
+                        <p>케이스를 저장하면 여기서 빠르게 재생성할 수 있습니다</p>
+                        <a href="input.html" class="primary-btn">첫 프로필 만들기</a>
+                    </div>
+                `;
+                return;
+            }
+
+            // 프로필 번호 자동 부여 (없는 경우만)
+            let needsUpdate = false;
+
+            // 생성일 기준 오래된 순서대로 정렬하여 번호 부여
+            const sortedByCreation = [...cases].sort((a, b) =>
+                new Date(a.savedAt || a.createdAt) - new Date(b.savedAt || b.createdAt)
+            );
+
+            sortedByCreation.forEach((profile, index) => {
+                if (!profile.profileNumber) {
+                    profile.profileNumber = String(index + 1).padStart(4, '0');
+                    needsUpdate = true;
+                }
+            });
+
+            // localStorage 업데이트
+            if (needsUpdate) {
+                localStorage.setItem('dentalCases', JSON.stringify(cases));
+            }
+
+            // 최신순 정렬 (표시용)
+            const displayCases = [...cases].sort((a, b) =>
+                new Date(b.savedAt || b.createdAt) - new Date(a.savedAt || a.createdAt)
+            );
+
+            // 프로필 그리드 생성
+            const grid = document.createElement('div');
+            grid.className = 'profiles-grid';
+
+            displayCases.forEach((profile) => {
+                const card = createProfileCard(profile);
+                grid.appendChild(card);
+            });
+
+            profileList.appendChild(grid);
+        }
+
+        function createProfileCard(profile) {
+            const card = document.createElement('div');
+            card.className = 'profile-card';
+            card.onclick = () => selectProfile(profile.profileNumber);
+
+            const date = new Date(profile.savedAt || profile.createdAt);
+            const dateStr = date.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            const clinicName = profile.clinicName || '이름 없는 치과';
+            const directorName = profile.directorName || '원장';
+            const location = profile.location || '-';
+            const profileNumber = profile.profileNumber || '0000';
+
+            card.innerHTML = `
+                <div class="profile-number">#${profileNumber}</div>
+                <div class="profile-name">
+                    ${clinicName} (${directorName})
+                </div>
+                <div class="profile-info">
+                    <span class="profile-location">📍 ${location}</span>
+                    <span class="profile-date">📅 ${dateStr}</span>
+                </div>
+                <div class="profile-action">
+                    <span class="action-hint">클릭하여 광고 콘텐츠 생성 →</span>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function selectProfile(profileNumber) {
+            const cases = JSON.parse(localStorage.getItem('dentalCases') || '[]');
+            const selectedProfile = cases.find(c => c.profileNumber === profileNumber);
+
+            if (!selectedProfile) {
+                alert('프로필을 찾을 수 없습니다.');
+                return;
+            }
+
+            // 비밀번호 확인
+            const savedPassword = selectedProfile.accessPassword;
+
+            if (savedPassword) {
+                // 비밀번호가 설정되어 있는 경우
+                const inputPassword = prompt('접속 비밀번호를 입력하세요 (4자리 숫자):');
+
+                if (inputPassword === null) {
+                    // 사용자가 취소를 누른 경우
+                    return;
+                }
+
+                if (inputPassword !== savedPassword) {
+                    alert('❌ 비밀번호가 일치하지 않습니다.\n접근이 거부되었습니다.');
+                    return;
+                }
+
+                // 비밀번호 일치
+                alert('✅ 비밀번호 확인 완료');
+            } else {
+                // 비밀번호가 설정되지 않은 경우 (구버전 프로필)
+                const confirm = window.confirm('이 프로필은 비밀번호가 설정되지 않았습니다.\n계속하시겠습니까?');
+                if (!confirm) return;
+            }
+
+            // dentalFormData에 복사
+            localStorage.setItem('dentalFormData', JSON.stringify(selectedProfile));
+
+            // input.html로 리디렉션 (자동 입력된 폼 확인 및 수정 가능)
+            window.location.href = 'input.html';
+        }
+
+        // 초기화
+        loadProfiles();
+    </script>
+</body>
+</html>
