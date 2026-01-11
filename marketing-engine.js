@@ -41,6 +41,426 @@ class MarketingEngine {
             reciprocity: '상호성',
             proof: '증거/사회적 증명'
         };
+
+        // 조건부 단어 풀 시스템 (신뢰 훼손 방지용 안전장치)
+        this.initializeWordPool();
+    }
+
+    /**
+     * 조건부 단어 풀 초기화
+     * Layer 1: 공통 허용 (항상 가능)
+     * Layer 2: 단계 조건부 허용 (STAGE별)
+     * Layer 3: 고급 조건부 허용 (보상형, 원장 1인칭)
+     * Layer 4: 절대 금지
+     */
+    initializeWordPool() {
+        // Layer 1: 공통 허용 단어 (모든 STAGE에서 사용 가능)
+        this.commonAllowedWords = [
+            // 기본 설명 단어
+            '설명', '안내', '이해', '확인', '질문', '답변', '대화', '소통', '경청',
+            '살펴보다', '검토', '비교', '판단', '결정', '시간', '여유',
+            '진단', '상담', '배려', '존중',
+
+            // 속도 반대 키워드 (광고 거부감 제거)
+            '천천히', '충분히', '서두르지 않고', '신중하게', '한 번 더',
+            '차근차근', '하나씩', '단계별로', '여유있게', '급하지 않게',
+
+            // 광고 회피형 표현
+            '기록', '이야기', '고민', '생각', '과정', '부담을 줄이다'
+        ];
+
+        // Layer 2: 단계 조건부 허용 단어
+        this.stageConditionalWords = {
+            // STAGE 1-2: 설명·공감 단계
+            'STAGE1-2': {
+                allowed: [
+                    // 불안 공감 키워드 (감정 진입)
+                    '불안', '걱정', '망설임', '쉽지 않은 결정', '부담',
+                    '두려움', '고민되는', '어려운', '복잡한', '막막한',
+                    '조심스럽게', '서두르지 않다', '이해가 필요하다',
+                    '불편함', '궁금하신', '혼란스러운',
+                    // 추가: 감정 공감 확장
+                    '무서운', '낯선', '걱정스러운', '불확실한', '혼자 고민하는'
+                ],
+                forbidden: [
+                    '철학', '원칙', '기준 선언', '오래', '함께', '신뢰',
+                    '관계', '약속', '보증', '지켜드리다', '책임지다'
+                ]
+            },
+            // STAGE 3: 결정권 제공 단계
+            'STAGE3': {
+                allowed: [
+                    // 환자 존중 키워드 (결정권 강조)
+                    '선택권', '결정은 환자분의 몫', '환자분의 선택',
+                    '충분히 생각한 뒤', '오늘 결정하지 않아도', '비교해보셔도',
+                    '자유롭게', '권한', '주도권', '스스로', '직접', '판단하시고',
+                    '여유를 가지고', '급하지 않습니다',
+                    // 추가: 존중 확장
+                    '강요하지 않습니다', '이해하신 후에', '동의하실 때만',
+                    '충분히 고민하셔도 됩니다', '환자분께서 원하실 때',
+                    '결정을 존중합니다'
+                ],
+                forbidden: [
+                    '1인칭 철학 선언', '장기 관계 암시', '평생', '계속',
+                    '항상', '영원히'
+                ]
+            },
+            // STAGE 4: 가치·철학 단계
+            'STAGE4': {
+                allowed: [
+                    // 철학·기준 키워드 (가치 선언)
+                    '기준', '원칙', '철학', '방향', '이유', '선택',
+                    '지키고 싶은', '중요하게 생각하는', '추구하는',
+                    '가치', '신념', '태도', '자세', '마음가짐',
+                    // 추가: 철학 확장
+                    '고집', '끝까지 지키고 싶은', '제가 선택한 이유',
+                    '진료 방식을 선택한 배경', '판단의 기준',
+                    '제 생각', '제 진료의 중심'
+                ],
+                condition: '설명형 문장 안에서만',
+                forbidden: [
+                    '우리가 최고', '1등', '유일한', '독보적', '비교불가'
+                ]
+            },
+            // STAGE 5: 신뢰·관계 단계 (보상 단어 - 최종 해금)
+            'STAGE5': {
+                allowed: [
+                    // 관계 지속 키워드 (단발 진료 탈피)
+                    '함께', '오래', '계속', '관계', '지켜보며', '책임',
+                    '끝까지', '앞으로도', '평생', '항상', '언제나',
+                    '동행', '파트너', '주치의', '신뢰',
+                    // 추가: 관계 확장
+                    '과정', '이번 치료만이 아니라', '장기적으로',
+                    '꾸준히', '지속적으로', '변화를 함께', '성장을 함께'
+                ],
+                condition: 'revenue_stage >= STAGE5 AND empathy >= 60 AND understanding >= 60'
+            }
+        };
+
+        // Layer 3: 고급 조건부 허용 단어 (원장 1인칭)
+        this.advancedConditionalWords = {
+            firstPerson: {
+                words: [
+                    // 원장 정체성 키워드 (1인칭 중심)
+                    '제가', '저는', '제 생각에는', '제가 생각하는',
+                    '제가 중요하게 여기는', '제 진료 기준은', '제 철학은',
+                    '저의 경험상', '제 진료는', '제가 생각하는 치료는',
+                    '제가 끝까지 지키고 싶은 기준은',
+                    // 추가: 책임과 신뢰 집중
+                    '제가 책임지겠습니다', '제가 함께하겠습니다',
+                    '제 판단으로는', '제가 선택한 이유는'
+                ],
+                condition: {
+                    minimumStage: 'STAGE3',
+                    minimumEmpathy: 60,
+                    minimumUnderstanding: 60
+                },
+                usageLimit: {
+                    maxPerContent: 2,
+                    rule: '선언형 ❌ / 설명형 ⭕',
+                    note: '병원이 아닌 사람이 주어 - 책임과 신뢰를 원장에게 집중'
+                }
+            }
+        };
+
+        // Layer 4: 절대 금지 단어 (의료법 + 신뢰 보호 + 광고 회피)
+        this.forbiddenWords = [
+            // 보장/확약 표현
+            '반드시', '무조건', '완치', '보장', '100%', '확실히',
+            '틀림없이', '절대', '분명히',
+
+            // 과장 표현
+            '최고', '최상', '최대', '유일', '독보적', '압도적',
+            '업계 1위', '지역 1위', '최고급', '최상급',
+
+            // 즉시성/긴급성 과장 (속도 중심 표현 금지)
+            '빠른 효과', '즉시', '당장', '바로', '지금 바로',
+            '오늘만', '한정', '마지막 기회', '빠르게', '신속하게',
+
+            // 상업적 표현 (광고 회피형 표현 의도적 배제)
+            '이벤트', '할인', '혜택', '특가', '프로모션',
+            '무료', '증정', '사은품', '홍보', '최저가',
+
+            // 비교/경쟁 표현
+            'Before/After', '타 병원', '다른 곳', '경쟁 병원',
+            '비교 불가', '압도적 차이',
+
+            // 의료법 위반 소지
+            '치료 보장', '효과 보장', '부작용 없음', '100% 안전',
+            '무통', '통증 제로'
+        ];
+
+        // 단어 풀 매핑 (STAGE -> 허용 레이어)
+        this.stageToWordPoolMapping = {
+            'STAGE1': ['common', 'STAGE1-2'],
+            'STAGE2': ['common', 'STAGE1-2'],
+            'STAGE3': ['common', 'STAGE1-2', 'STAGE3'],
+            'STAGE4': ['common', 'STAGE1-2', 'STAGE3', 'STAGE4'],
+            'STAGE5': ['common', 'STAGE1-2', 'STAGE3', 'STAGE4', 'STAGE5']
+        };
+
+        // 정체성 선언 스타일 키워드 그룹 (7개 그룹)
+        this.identityKeywordGroups = {
+            // ① 원장 정체성 (1인칭 중심) - Layer 3에서 관리
+            directorIdentity: {
+                keywords: this.advancedConditionalWords.firstPerson.words,
+                purpose: '병원이 아닌 사람이 주어, 책임과 신뢰를 원장에게 집중',
+                usage: 'STAGE3 이상 + 신뢰점수 조건'
+            },
+
+            // ② 철학·기준 (가치 선언) - STAGE4
+            philosophy: {
+                keywords: ['기준', '원칙', '철학', '방향', '이유', '선택', '고집', '태도'],
+                purpose: '기술이 아니라 판단의 이유를 강조',
+                usage: 'STAGE4 이상, 설명형 문장에서만'
+            },
+
+            // ③ 속도 반대 (광고 거부감 제거) - Layer 1
+            antiSpeed: {
+                keywords: ['천천히', '충분히', '서두르지 않고', '신중하게', '한 번 더', '끝까지', '오래'],
+                purpose: '이 병원은 나를 급하게 몰지 않겠구나',
+                usage: '모든 STAGE'
+            },
+
+            // ④ 환자 존중 (결정권 강조) - STAGE3
+            patientRespect: {
+                keywords: ['환자분의 선택', '결정은 환자분의 몫', '강요하지 않습니다', '이해하신 후에', '동의하실 때만'],
+                purpose: '문장이 광고 같지 않게 느껴지도록',
+                usage: 'STAGE3 이상'
+            },
+
+            // ⑤ 불안 공감 (감정 진입) - STAGE1-2
+            anxietyEmpathy: {
+                keywords: ['걱정', '불안', '망설임', '두려움', '고민', '부담', '쉽지 않은 결정'],
+                purpose: '치료 이야기 전에 감정부터 건드림',
+                usage: 'STAGE1-2, 문장 초반부'
+            },
+
+            // ⑥ 관계 지속 (단발 진료 탈피) - STAGE5
+            relationship: {
+                keywords: ['함께', '오래', '앞으로도', '계속', '관계', '과정', '지켜보며'],
+                purpose: '병원을 사건이 아니라 관계로 인식',
+                usage: 'STAGE5, 보상 단어'
+            },
+
+            // ⑦ 광고 회피형 표현 - Layer 1
+            antiAdvertising: {
+                allowed: ['안내', '설명', '기록', '이야기', '생각'],
+                forbidden: ['홍보', '이벤트', '혜택', '할인', '최저가', '빠른 효과'],
+                purpose: '의도적으로 광고 단어 배제'
+            }
+        };
+    }
+
+    /**
+     * 단어 검증: 특정 단어가 현재 STAGE와 신뢰 점수에서 사용 가능한지 확인
+     * @param {string} word - 검증할 단어
+     * @param {string} stage - 현재 STAGE (STAGE1~5)
+     * @param {object} trustScores - 신뢰 점수 {empathy, understanding, decision, value, trust}
+     * @returns {object} {allowed: boolean, reason: string}
+     */
+    validateWord(word, stage, trustScores = {}) {
+        // Layer 4: 절대 금지 단어 체크
+        if (this.forbiddenWords.some(forbidden => word.includes(forbidden))) {
+            return {
+                allowed: false,
+                reason: '절대 금지 단어 (의료법 + 신뢰 보호)',
+                layer: 'Layer 4'
+            };
+        }
+
+        // Layer 1: 공통 허용 단어 체크
+        if (this.commonAllowedWords.some(common => word.includes(common))) {
+            return {
+                allowed: true,
+                reason: '공통 허용 단어',
+                layer: 'Layer 1'
+            };
+        }
+
+        // Layer 2: 단계 조건부 허용 단어 체크
+        const allowedLayers = this.stageToWordPoolMapping[stage] || ['common'];
+
+        for (const layerKey of allowedLayers) {
+            if (layerKey === 'common') continue;
+
+            const layerConfig = this.stageConditionalWords[layerKey];
+            if (!layerConfig) continue;
+
+            // 해당 레이어의 금지 단어 체크
+            if (layerConfig.forbidden &&
+                layerConfig.forbidden.some(forbidden => word.includes(forbidden))) {
+                return {
+                    allowed: false,
+                    reason: `${layerKey}에서 금지된 단어`,
+                    layer: 'Layer 2'
+                };
+            }
+
+            // 해당 레이어의 허용 단어 체크
+            if (layerConfig.allowed &&
+                layerConfig.allowed.some(allowed => word.includes(allowed))) {
+                return {
+                    allowed: true,
+                    reason: `${layerKey}에서 허용된 단어`,
+                    layer: 'Layer 2',
+                    condition: layerConfig.condition
+                };
+            }
+        }
+
+        // Layer 3: 고급 조건부 허용 (원장 1인칭) 체크
+        const firstPersonConfig = this.advancedConditionalWords.firstPerson;
+        if (firstPersonConfig.words.some(fp => word.includes(fp))) {
+            const { minimumStage, minimumEmpathy, minimumUnderstanding } =
+                firstPersonConfig.condition;
+
+            const stageNum = parseInt(stage.replace('STAGE', ''));
+            const minStageNum = parseInt(minimumStage.replace('STAGE', ''));
+
+            const meetsCondition =
+                stageNum >= minStageNum &&
+                (trustScores.empathy || 0) >= minimumEmpathy &&
+                (trustScores.understanding || 0) >= minimumUnderstanding;
+
+            return {
+                allowed: meetsCondition,
+                reason: meetsCondition
+                    ? '고급 조건부 허용 (원장 1인칭)'
+                    : '조건 미충족 (STAGE3 이상 + empathy 60+ + understanding 60+)',
+                layer: 'Layer 3',
+                usageLimit: firstPersonConfig.usageLimit
+            };
+        }
+
+        // 어떤 레이어에도 해당하지 않음 (기본 허용)
+        return {
+            allowed: true,
+            reason: '일반 단어 (제한 없음)',
+            layer: 'None'
+        };
+    }
+
+    /**
+     * 텍스트 필터링: 생성된 텍스트에서 금지 단어 제거 및 경고
+     * @param {string} text - 필터링할 텍스트
+     * @param {string} stage - 현재 STAGE
+     * @param {object} trustScores - 신뢰 점수
+     * @returns {object} {filteredText: string, warnings: array, violations: array}
+     */
+    filterText(text, stage, trustScores = {}) {
+        let filteredText = text;
+        const warnings = [];
+        const violations = [];
+        const firstPersonCount = {};
+
+        // 문장 단위로 분리
+        const sentences = text.split(/[.!?\n]/);
+        const filteredSentences = [];
+
+        for (const sentence of sentences) {
+            if (!sentence.trim()) {
+                filteredSentences.push(sentence);
+                continue;
+            }
+
+            let shouldRemoveSentence = false;
+            const sentenceWarnings = [];
+
+            // 각 단어 검증
+            const words = sentence.split(/[\s,]/);
+            for (const word of words) {
+                if (!word.trim()) continue;
+
+                const validation = this.validateWord(word, stage, trustScores);
+
+                if (!validation.allowed) {
+                    if (validation.layer === 'Layer 4') {
+                        // 절대 금지 단어 발견 - 문장 제거
+                        shouldRemoveSentence = true;
+                        violations.push({
+                            word,
+                            sentence,
+                            reason: validation.reason
+                        });
+                        break;
+                    } else {
+                        // 조건부 금지 - 경고만
+                        sentenceWarnings.push({
+                            word,
+                            reason: validation.reason,
+                            layer: validation.layer
+                        });
+                    }
+                }
+
+                // Layer 3 (원장 1인칭) 사용 횟수 카운트
+                if (validation.layer === 'Layer 3' && validation.allowed) {
+                    const key = validation.reason;
+                    firstPersonCount[key] = (firstPersonCount[key] || 0) + 1;
+
+                    if (firstPersonCount[key] > validation.usageLimit.maxPerContent) {
+                        sentenceWarnings.push({
+                            word,
+                            reason: `원장 1인칭 과다 사용 (최대 ${validation.usageLimit.maxPerContent}회)`,
+                            layer: 'Layer 3'
+                        });
+                    }
+                }
+            }
+
+            if (!shouldRemoveSentence) {
+                filteredSentences.push(sentence);
+                if (sentenceWarnings.length > 0) {
+                    warnings.push(...sentenceWarnings);
+                }
+            }
+        }
+
+        filteredText = filteredSentences.join('. ').replace(/\.\s*\./g, '.');
+
+        return {
+            filteredText,
+            warnings,
+            violations,
+            stats: {
+                originalLength: text.length,
+                filteredLength: filteredText.length,
+                removedSentences: sentences.length - filteredSentences.length,
+                firstPersonUsage: firstPersonCount
+            }
+        };
+    }
+
+    /**
+     * STAGE별 허용 단어 풀 조회
+     * @param {string} stage - STAGE1~5
+     * @returns {object} 해당 STAGE에서 사용 가능한 모든 단어
+     */
+    getAllowedWordPool(stage) {
+        const allowedLayers = this.stageToWordPoolMapping[stage] || ['common'];
+        const wordPool = {
+            common: this.commonAllowedWords,
+            stageSpecific: [],
+            advanced: [],
+            forbidden: this.forbiddenWords
+        };
+
+        for (const layerKey of allowedLayers) {
+            if (layerKey === 'common') continue;
+
+            const layerConfig = this.stageConditionalWords[layerKey];
+            if (layerConfig && layerConfig.allowed) {
+                wordPool.stageSpecific.push(...layerConfig.allowed);
+            }
+        }
+
+        // STAGE3 이상에서 원장 1인칭 허용
+        if (parseInt(stage.replace('STAGE', '')) >= 3) {
+            wordPool.advanced = this.advancedConditionalWords.firstPerson.words;
+        }
+
+        return wordPool;
     }
 
     /**
@@ -710,7 +1130,7 @@ class MarketingEngine {
     }
 
     /**
-     * 통합 콘텐츠 생성 - 모든 이론 적용
+     * 통합 콘텐츠 생성 - 모든 이론 적용 + 조건부 단어 풀 필터링
      */
     generateIntegratedContent(context) {
         const {
@@ -737,8 +1157,8 @@ class MarketingEngine {
         // 5. NLP 패턴 적용
         const nlpPattern = this.selectNLPPattern(contentType);
 
-        // 6. 최종 콘텐츠 조합
-        return this.assembleContent({
+        // 6. 최종 콘텐츠 조합 (조건부 단어 풀 필터링 포함)
+        const result = this.assembleContent({
             hso,
             relationshipStrategy,
             aida,
@@ -746,6 +1166,14 @@ class MarketingEngine {
             nlpPattern,
             context
         });
+
+        // 필터링 결과와 함께 반환
+        return {
+            content: result.content,
+            wordPoolFilter: result.filterResult,
+            stage: this.mapRevenueStageToStage(revenueStage),
+            allowedWords: this.getAllowedWordPool(this.mapRevenueStageToStage(revenueStage))
+        };
     }
 
     /**
@@ -881,7 +1309,36 @@ class MarketingEngine {
         content += this.generateHashtags(context);
         content += `</div>`;
 
-        return content;
+        // 조건부 단어 풀 필터링 적용
+        const stage = this.mapRevenueStageToStage(context.revenueStage);
+        const filterResult = this.filterText(content, stage, context.trustScores);
+
+        // 필터링 결과 로깅 (개발/디버깅용)
+        if (filterResult.violations.length > 0 || filterResult.warnings.length > 0) {
+            console.log('📊 단어 필터 결과:', {
+                stage,
+                violations: filterResult.violations,
+                warnings: filterResult.warnings,
+                stats: filterResult.stats
+            });
+        }
+
+        return {
+            content: filterResult.filteredText,
+            filterResult: {
+                violations: filterResult.violations,
+                warnings: filterResult.warnings,
+                stats: filterResult.stats
+            }
+        };
+    }
+
+    /**
+     * revenueStage (숫자 1-5) => STAGE 포맷으로 변환
+     */
+    mapRevenueStageToStage(revenueStage) {
+        const stageNum = parseInt(revenueStage) || 3;
+        return `STAGE${stageNum}`;
     }
 
     /**
@@ -1545,6 +2002,218 @@ class MarketingEngine {
         story += `</div>`;
 
         return story;
+    }
+
+    /**
+     * 정체성 선언 스타일 문장 생성 (정체성 선언 + 설득 문장)
+     *
+     * 문장 공식:
+     * ① 환자의 불안 언급
+     * ② 원장 1인칭 등장
+     * ③ 진료 철학 선언
+     * ④ 서두르지 않겠다는 약속
+     * ⑤ 결정권은 환자에게 있음
+     * ⑥ 관계 중심 마무리
+     *
+     * @param {object} context - {contentType, revenueStage, directorName, clinicName, trustScores}
+     * @returns {object} {content, filterResult}
+     */
+    generateIdentityStyle(context) {
+        const {
+            contentType = 'empathy',
+            revenueStage,
+            directorName = '원장',
+            clinicName = '치과',
+            trustScores = {}
+        } = context;
+
+        const stage = this.mapRevenueStageToStage(revenueStage);
+        let content = '';
+
+        // Step ① 환자의 불안 언급 (STAGE1-2 키워드)
+        const anxietyOpening = this.generateAnxietyOpening(stage, contentType);
+        content += `<strong style="font-size: 18px; color: #333;">${anxietyOpening}</strong><br><br>`;
+
+        // Step ② 원장 1인칭 등장 (STAGE3 이상에서만)
+        if (parseInt(stage.replace('STAGE', '')) >= 3) {
+            const directorVoice = this.generateDirectorVoice(stage, directorName, trustScores);
+            if (directorVoice) {
+                content += `${directorVoice}<br><br>`;
+            }
+        }
+
+        // Step ③ 진료 철학 선언 (STAGE4 이상에서만)
+        if (parseInt(stage.replace('STAGE', '')) >= 4) {
+            const philosophy = this.generatePhilosophyStatement(stage, directorName, contentType);
+            content += `<strong>【 진료 철학 】</strong><br>${philosophy}<br><br>`;
+        }
+
+        // Step ④ 서두르지 않겠다는 약속 (모든 STAGE)
+        const noRushPromise = this.generateNoRushPromise(stage);
+        content += `${noRushPromise}<br><br>`;
+
+        // Step ⑤ 결정권은 환자에게 있음 (STAGE3 이상에서만)
+        if (parseInt(stage.replace('STAGE', '')) >= 3) {
+            const patientAutonomy = this.generatePatientAutonomy(stage);
+            content += `${patientAutonomy}<br><br>`;
+        }
+
+        // Step ⑥ 관계 중심 마무리 (STAGE5에서만)
+        if (parseInt(stage.replace('STAGE', '')) >= 5) {
+            const relationshipClosing = this.generateRelationshipClosing(stage, directorName, clinicName);
+            content += `<strong style="color: #667eea;">${relationshipClosing}</strong>`;
+        }
+
+        // 조건부 단어 풀 필터링 적용
+        const filterResult = this.filterText(content, stage, trustScores);
+
+        return {
+            content: filterResult.filteredText,
+            filterResult: {
+                violations: filterResult.violations,
+                warnings: filterResult.warnings,
+                stats: filterResult.stats
+            },
+            style: 'Identity',
+            formula: '불안언급 → 원장1인칭 → 철학선언 → 서두르지않음 → 결정권환자 → 관계중심'
+        };
+    }
+
+    /**
+     * Step ① 환자의 불안 언급
+     */
+    generateAnxietyOpening(stage, contentType) {
+        const anxietyTemplates = {
+            empathy: [
+                '치과 치료를 앞두고 걱정이 되시나요?',
+                '치과에 가기가 망설여지시나요?',
+                '어떤 치료가 필요한지 혼란스러우실 수 있습니다.'
+            ],
+            understanding: [
+                '치과 치료에 대해 궁금하신 점이 많으실 겁니다.',
+                '어떤 치료가 맞는지 고민이 되실 수 있습니다.',
+                '복잡한 치료 설명이 부담스러우셨을 수 있습니다.'
+            ],
+            decision: [
+                '치과 치료 결정이 쉽지 않으실 겁니다.',
+                '어떤 선택이 맞는지 망설여지실 수 있습니다.',
+                '비용과 효과를 놓고 고민이 되실 겁니다.'
+            ],
+            value: [
+                '장기적으로 좋은 치료가 무엇인지 고민되시나요?',
+                '지금 투자가 가치있을지 망설여지시나요?',
+                '치료 후에도 유지가 될지 불안하실 수 있습니다.'
+            ],
+            trust: [
+                '어떤 병원을 선택해야 할지 고민이시죠.',
+                '이 병원을 믿어도 될지 망설여지실 수 있습니다.',
+                '오래 함께할 치과를 찾기가 어려우셨을 겁니다.'
+            ]
+        };
+
+        const templates = anxietyTemplates[contentType] || anxietyTemplates.empathy;
+        return templates[Math.floor(Math.random() * templates.length)];
+    }
+
+    /**
+     * Step ② 원장 1인칭 등장
+     */
+    generateDirectorVoice(stage, directorName, trustScores) {
+        // 조건 체크
+        const validation = this.validateWord('제가', stage, trustScores);
+        if (!validation.allowed) {
+            return ''; // 조건 미충족 시 생략
+        }
+
+        const templates = [
+            `${directorName}입니다. 제가 직접 상담하고 치료합니다.`,
+            `저는 ${directorName}입니다. 제가 환자분과 충분히 이야기 나누겠습니다.`,
+            `${directorName}입니다. 제가 끝까지 책임지겠습니다.`
+        ];
+
+        return templates[Math.floor(Math.random() * templates.length)];
+    }
+
+    /**
+     * Step ③ 진료 철학 선언
+     */
+    generatePhilosophyStatement(stage, directorName, contentType) {
+        const philosophyTemplates = {
+            empathy: '제가 가장 중요하게 생각하는 것은 환자분의 마음입니다. 불안을 먼저 해소하는 것이 치료의 시작이라고 믿습니다.',
+            understanding: '제 진료 기준은 명확한 설명입니다. 환자분이 충분히 이해하실 때까지 설명하는 것이 제 원칙입니다.',
+            decision: '제 철학은 환자분의 선택을 존중하는 것입니다. 강요하지 않고, 선택을 돕는 것이 제 역할입니다.',
+            value: '제가 추구하는 치료는 10년 뒤를 생각하는 치료입니다. 지금 당장보다 오래 유지되는 가치를 중요하게 여깁니다.',
+            trust: '제가 끝까지 지키고 싶은 기준은 신뢰입니다. 한 번의 치료가 아니라 평생 관계를 만드는 것이 제 목표입니다.'
+        };
+
+        return philosophyTemplates[contentType] || philosophyTemplates.empathy;
+    }
+
+    /**
+     * Step ④ 서두르지 않겠다는 약속
+     */
+    generateNoRushPromise(stage) {
+        const templates = [
+            '천천히 충분히 고민하셔도 됩니다. 서두르지 않겠습니다.',
+            '시간을 가지고 신중하게 결정하시면 됩니다. 급하지 않습니다.',
+            '한 번 더 생각하시고 결정하셔도 충분합니다. 여유있게 결정하세요.',
+            '오늘 결정하지 않으셔도 됩니다. 충분히 고민하신 후에 선택하세요.'
+        ];
+
+        return templates[Math.floor(Math.random() * templates.length)];
+    }
+
+    /**
+     * Step ⑤ 결정권은 환자에게 있음
+     */
+    generatePatientAutonomy(stage) {
+        const templates = [
+            '결정은 환자분의 몫입니다. 이해하신 후에 동의하실 때만 진행합니다.',
+            '환자분의 선택을 존중합니다. 강요하지 않습니다.',
+            '최종 결정은 환자분께서 하시면 됩니다. 판단을 돕겠습니다.',
+            '환자분이 원하실 때 시작하시면 됩니다. 선택은 자유롭게 하세요.'
+        ];
+
+        return templates[Math.floor(Math.random() * templates.length)];
+    }
+
+    /**
+     * Step ⑥ 관계 중심 마무리
+     */
+    generateRelationshipClosing(stage, directorName, clinicName) {
+        const templates = [
+            `${clinicName}은 함께 오래 가는 관계를 만들고 싶습니다. 앞으로도 지켜보며 함께하겠습니다.`,
+            `${directorName}은 이번 치료만이 아니라 과정을 함께하고 싶습니다. 계속 관계를 이어가겠습니다.`,
+            `${clinicName}에서 평생 주치의 관계를 시작하세요. 끝까지 책임지겠습니다.`
+        ];
+
+        return templates[Math.floor(Math.random() * templates.length)];
+    }
+
+    /**
+     * 정체성 선언 키워드 그룹 조회
+     */
+    getIdentityKeywordGroup(groupName) {
+        return this.identityKeywordGroups[groupName] || null;
+    }
+
+    /**
+     * 현재 STAGE에서 사용 가능한 정체성 선언 키워드 확인
+     */
+    getAvailableIdentityKeywords(stage, trustScores = {}) {
+        const stageNum = parseInt(stage.replace('STAGE', ''));
+        const available = {
+            antiSpeed: this.identityKeywordGroups.antiSpeed.keywords, // 항상 사용 가능
+            antiAdvertising: this.identityKeywordGroups.antiAdvertising.allowed, // 항상 사용 가능
+            anxietyEmpathy: stageNum >= 1 ? this.identityKeywordGroups.anxietyEmpathy.keywords : [],
+            patientRespect: stageNum >= 3 ? this.identityKeywordGroups.patientRespect.keywords : [],
+            directorIdentity: stageNum >= 3 && trustScores.empathy >= 60 && trustScores.understanding >= 60
+                ? this.identityKeywordGroups.directorIdentity.keywords : [],
+            philosophy: stageNum >= 4 ? this.identityKeywordGroups.philosophy.keywords : [],
+            relationship: stageNum >= 5 ? this.identityKeywordGroups.relationship.keywords : []
+        };
+
+        return available;
     }
 }
 
