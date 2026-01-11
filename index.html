@@ -19,7 +19,105 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            padding: 20px 20px 0 20px;
+            padding: 80px 20px 0 20px;
+        }
+
+        /* Header Navigation Styles */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 15px 30px;
+        }
+
+        .top-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            gap: 12px;
+        }
+
+        .header-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .header-logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .header-nav a {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .header-nav a:hover {
+            color: #667eea;
+        }
+
+        .header-nav a.active {
+            color: #667eea;
+        }
+
+        .header-nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #667eea;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .top-header {
+                padding: 12px 20px;
+            }
+
+            .header-logo-text {
+                font-size: 14px;
+            }
+
+            .header-logo img {
+                height: 30px;
+            }
+
+            .header-nav {
+                gap: 15px;
+            }
+
+            .header-nav a {
+                font-size: 14px;
+            }
+
+            body {
+                padding: 70px 20px 0 20px;
+            }
         }
 
         .container {
@@ -295,6 +393,21 @@
     </style>
 </head>
 <body>
+    <!-- Top Header Navigation -->
+    <header class="top-header">
+        <div class="top-header-content">
+            <a href="index.html" class="header-logo">
+                <img src="로고3.png" alt="치과 맞춤식 광고 콘텐츠 생성기 로고">
+                <span class="header-logo-text">치과 맞춤식 광고 콘텐츠 생성기</span>
+            </a>
+            <nav class="header-nav">
+                <a href="index.html" class="active">홈</a>
+                <a href="input.html">생성시작</a>
+                <a href="cases.html">샘플보기</a>
+            </nav>
+        </div>
+    </header>
+
     <div class="container">
         <div class="header">
             <div class="logo">🦷</div>

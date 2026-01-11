@@ -14,16 +14,22 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
             background: #f5f7fa;
-            padding-bottom: 60px;
+            padding: 80px 0 60px 0;
         }
 
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 20px;
+        /* Header Navigation Styles */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding: 15px 30px;
         }
 
-        .header-content {
+        .top-header-content {
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
@@ -31,30 +37,82 @@
             align-items: center;
         }
 
-        .header-left h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .header-left p {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-
-        .back-btn {
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid white;
-            border-radius: 8px;
+        .header-logo {
+            display: flex;
+            align-items: center;
             text-decoration: none;
-            font-weight: 600;
-            transition: all 0.2s;
+            gap: 12px;
         }
 
-        .back-btn:hover {
-            background: white;
+        .header-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .header-logo-text {
+            font-size: 18px;
+            font-weight: 700;
             color: #667eea;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .header-nav a {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .header-nav a:hover {
+            color: #667eea;
+        }
+
+        .header-nav a.active {
+            color: #667eea;
+        }
+
+        .header-nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #667eea;
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .top-header {
+                padding: 12px 20px;
+            }
+
+            .header-logo-text {
+                font-size: 14px;
+            }
+
+            .header-logo img {
+                height: 30px;
+            }
+
+            .header-nav {
+                gap: 15px;
+            }
+
+            .header-nav a {
+                font-size: 14px;
+            }
+
+            body {
+                padding: 70px 0 60px 0;
+            }
         }
 
         .container {
@@ -210,18 +268,8 @@
         }
 
         @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-            }
-
             .cases-grid {
                 grid-template-columns: 1fr;
-            }
-
-            .header-left h1 {
-                font-size: 24px;
             }
         }
 
@@ -292,15 +340,20 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="header-content">
-            <div class="header-left">
-                <h1>📂 저장된 케이스</h1>
-                <p>이전에 생성한 광고 콘텐츠 전략을 확인하세요</p>
-            </div>
-            <a href="index.html" class="back-btn">← 처음으로</a>
+    <!-- Top Header Navigation -->
+    <header class="top-header">
+        <div class="top-header-content">
+            <a href="index.html" class="header-logo">
+                <img src="로고3.png" alt="치과 맞춤식 광고 콘텐츠 생성기 로고">
+                <span class="header-logo-text">치과 맞춤식 광고 콘텐츠 생성기</span>
+            </a>
+            <nav class="header-nav">
+                <a href="index.html">홈</a>
+                <a href="input.html">생성시작</a>
+                <a href="cases.html" class="active">샘플보기</a>
+            </nav>
         </div>
-    </div>
+    </header>
 
     <div class="container">
         <div id="caseList"></div>
