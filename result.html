@@ -1579,7 +1579,8 @@
                         permissionLevel
                     );
 
-                    let content = marketingEngine.generateIntegratedContent(context);
+                    let contentResult = marketingEngine.generateIntegratedContent(context);
+                    let content = contentResult.content || contentResult; // content 속성이 있으면 사용, 없으면 전체 사용
 
                     // 길이에 따른 추가 확장
                     if (length === 'medium') {
@@ -2191,7 +2192,8 @@ ${context.philosophy || '"처음 방문했을 때부터 달랐어요. 단순히 
                     };
 
                     // Generate content using marketing engine
-                    const content = marketingEngine.generateIntegratedContent(context);
+                    const contentResult = marketingEngine.generateIntegratedContent(context);
+                    const content = contentResult.content || contentResult; // content 속성이 있으면 사용, 없으면 전체 사용
 
                     // Generate title
                     const title = marketingEngine.generateAdTitle(
