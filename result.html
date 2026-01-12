@@ -156,6 +156,17 @@
             font-weight: 600;
         }
 
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .diagnosis-info {
             background: #f8f9ff;
             border-left: 4px solid #667eea;
@@ -557,6 +568,17 @@
             .primary-btn, .secondary-btn {
                 width: 100%;
             }
+
+            .diagnosis-level {
+                display: block;
+                margin: 5px 0;
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            .diagnosis-content h2 {
+                font-size: 20px;
+            }
         }
 
         /* Modal Styles */
@@ -814,8 +836,8 @@
             <nav class="header-nav">
                 <a href="index.html">홈</a>
                 <a href="input.html">생성시작</a>
-                <a href="cases.html">샘플보기</a>
                 <a href="profiles.html">내 프로필</a>
+                <a href="cases.html">내 결과 보기</a>
             </nav>
         </div>
     </header>
@@ -870,6 +892,7 @@
                 <div class="diagnosis-content">
                     <h2 id="clinicName">귀원의 상황과 목표에 적합한 맞춤식 광고 콘텐츠를 제공합니다!</h2>
                     <span class="diagnosis-level" id="permissionLevel">광고 콘텐츠 허용 레벨: L3</span>
+                    <span class="diagnosis-level" id="profileNumber" style="display: none; margin-left: 15px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); animation: fadeIn 0.5s ease-in;"></span>
                 </div>
             </div>
             <div class="diagnosis-info">
@@ -1479,6 +1502,11 @@
                 updateDisplay();
                 generateAllAdContents();
 
+                // Display existing profile number if available
+                if (formData.profileNumber) {
+                    displayProfileNumber(formData.profileNumber);
+                }
+
                 // Auto-save the case (중복 체크 포함)
                 saveCase(true);
             } else {
@@ -1963,23 +1991,57 @@ ${context.philosophy || '"처음 방문했을 때부터 달랐어요. 단순히 
             );
 
             if (existingIndex !== -1) {
-                // Already saved, skip
+                // Already saved, skip - but show the profile number
                 if (!autoSave) {
                     alert('이미 저장된 케이스입니다!');
                 }
+                // Display existing profile number
+                displayProfileNumber(cases[existingIndex].profileNumber);
                 return;
             }
 
             // Add current case
             formData.savedAt = new Date().toISOString();
             formData.id = Date.now();
+
+            // Assign profile number based on creation date order
+            // Get all cases sorted by creation date (oldest first)
+            const sortedByCreation = [...cases].sort((a, b) =>
+                new Date(a.savedAt || a.createdAt) - new Date(b.savedAt || b.createdAt)
+            );
+
+            // Calculate new profile number
+            const newProfileNumber = String(sortedByCreation.length + 1).padStart(4, '0');
+            formData.profileNumber = newProfileNumber;
+
             cases.push(formData);
+
+            // Reassign all profile numbers to maintain consistency
+            const allSortedCases = [...cases].sort((a, b) =>
+                new Date(a.savedAt || a.createdAt) - new Date(b.savedAt || b.createdAt)
+            );
+
+            allSortedCases.forEach((profile, index) => {
+                profile.profileNumber = String(index + 1).padStart(4, '0');
+            });
 
             // Save back to localStorage
             localStorage.setItem('dentalCases', JSON.stringify(cases));
 
+            // Display the profile number
+            displayProfileNumber(formData.profileNumber);
+
             if (!autoSave) {
-                alert('케이스가 저장되었습니다!');
+                alert(`케이스가 저장되었습니다!\n프로필 번호: #${formData.profileNumber}`);
+            }
+        }
+
+        // Display profile number
+        function displayProfileNumber(profileNumber) {
+            const profileNumberElement = document.getElementById('profileNumber');
+            if (profileNumberElement && profileNumber) {
+                profileNumberElement.textContent = `프로필 번호: #${profileNumber}`;
+                profileNumberElement.style.display = 'inline-block';
             }
         }
 
