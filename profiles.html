@@ -14,7 +14,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
             background: #f5f7fa;
-            padding: 80px 0 60px 0;
+            padding: 65px 0 30px 0;
         }
 
         /* Header Navigation Styles */
@@ -26,7 +26,7 @@
             background: rgba(255, 255, 255, 0.98);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000;
-            padding: 15px 30px;
+            padding: 12px 30px;
         }
 
         .top-header-content {
@@ -45,26 +45,26 @@
         }
 
         .header-logo img {
-            height: 40px;
+            height: 35px;
             width: auto;
         }
 
         .header-logo-text {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: #667eea;
         }
 
         .header-nav {
             display: flex;
-            gap: 30px;
+            gap: 25px;
             align-items: center;
         }
 
         .header-nav a {
             text-decoration: none;
             color: #333;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             transition: all 0.3s;
             position: relative;
@@ -111,70 +111,70 @@
             }
 
             body {
-                padding: 70px 0 60px 0;
+                padding: 65px 0 50px 0;
             }
         }
 
         .container {
-            max-width: 1200px;
-            margin: 30px auto;
+            max-width: 1400px;
+            margin: 20px auto;
             padding: 0 20px;
         }
 
         .page-header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 40px 20px;
+            margin-bottom: 20px;
+            padding: 25px 20px;
             background: white;
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .page-header h1 {
-            font-size: 32px;
+            font-size: 24px;
             font-weight: 700;
             color: #333;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
 
         .page-header p {
-            font-size: 16px;
+            font-size: 14px;
             color: #666;
         }
 
         .empty-state {
             text-align: center;
-            padding: 80px 20px;
+            padding: 50px 20px;
             background: white;
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .empty-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-
-        .empty-state h2 {
-            font-size: 24px;
-            color: #333;
+            font-size: 60px;
             margin-bottom: 15px;
         }
 
+        .empty-state h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
         .empty-state p {
-            font-size: 16px;
+            font-size: 14px;
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .primary-btn {
             display: inline-block;
-            padding: 14px 28px;
+            padding: 10px 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
@@ -187,15 +187,15 @@
 
         .profiles-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
         }
 
         .profile-card {
             background: white;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
@@ -203,8 +203,8 @@
         }
 
         .profile-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.25);
         }
 
         .profile-card::before {
@@ -213,36 +213,37 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
+            height: 3px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
         .profile-number {
             display: inline-block;
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 700;
             color: white;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 6px 16px;
-            border-radius: 20px;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
+            padding: 4px 12px;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
         }
 
         .profile-name {
-            font-size: 22px;
+            font-size: 16px;
             font-weight: 700;
             color: #333;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             word-break: keep-all;
+            line-height: 1.3;
         }
 
         .profile-info {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
+            gap: 5px;
+            margin-bottom: 12px;
+            font-size: 12px;
             color: #666;
         }
 
@@ -250,17 +251,17 @@
         .profile-date {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
 
         .profile-action {
             text-align: center;
-            padding-top: 15px;
-            border-top: 2px solid #f0f0f0;
+            padding-top: 10px;
+            border-top: 1.5px solid #f0f0f0;
         }
 
         .action-hint {
-            font-size: 13px;
+            font-size: 11px;
             color: #667eea;
             font-weight: 600;
         }
@@ -271,15 +272,23 @@
             }
 
             .profile-card {
-                padding: 20px;
+                padding: 16px;
             }
 
             .profile-name {
-                font-size: 18px;
+                font-size: 15px;
+            }
+
+            .page-header {
+                padding: 20px 15px;
             }
 
             .page-header h1 {
-                font-size: 24px;
+                font-size: 20px;
+            }
+
+            .search-container {
+                padding: 15px;
             }
         }
 
@@ -287,8 +296,8 @@
         .footer {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 40px 20px;
-            margin-top: 60px;
+            padding: 30px 20px;
+            margin-top: 40px;
             text-align: center;
         }
         .footer-content {
@@ -296,28 +305,28 @@
             margin: 0 auto;
         }
         .footer-title {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .footer-info {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-bottom: 25px;
-            font-size: 16px;
+            gap: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
         }
         .footer-info-item {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
         .footer-brand {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 600;
-            margin-top: 25px;
-            padding-top: 25px;
+            margin-top: 15px;
+            padding-top: 15px;
             border-top: 1px solid rgba(255, 255, 255, 0.3);
         }
         .footer-link {
@@ -331,14 +340,15 @@
 
         .footer-admin-btn {
             display: inline-block;
-            margin-top: 20px;
-            padding: 12px 24px;
+            margin-top: 15px;
+            padding: 8px 16px;
             background: rgba(255, 255, 255, 0.2);
             color: white;
             border: 2px solid white;
-            border-radius: 8px;
+            border-radius: 6px;
             text-decoration: none;
             font-weight: 600;
+            font-size: 13px;
             transition: all 0.3s;
         }
 
@@ -346,6 +356,118 @@
             background: white;
             color: #667eea;
             transform: translateY(-2px);
+        }
+
+        /* Search Box Styles */
+        .search-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            margin-bottom: 15px;
+        }
+
+        .search-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .search-fields {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .search-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .search-field label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .search-field input {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .search-field input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .search-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .search-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .search-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .search-btn.secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .search-btn.secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .search-results-info {
+            text-align: center;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 8px;
+            font-size: 13px;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .search-fields {
+                grid-template-columns: 1fr;
+            }
+
+            .search-actions {
+                flex-direction: column;
+            }
+
+            .search-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -372,6 +494,33 @@
             <p>저장된 프로필을 선택하면 즉시 광고 콘텐츠를 생성합니다</p>
         </div>
 
+        <!-- Search Container -->
+        <div class="search-container">
+            <div class="search-title">
+                <span>🔍</span>
+                <span>프로필 검색</span>
+            </div>
+            <div class="search-fields">
+                <div class="search-field">
+                    <label for="searchNumber">일련번호</label>
+                    <input type="text" id="searchNumber" placeholder="예: 0001">
+                </div>
+                <div class="search-field">
+                    <label for="searchClinic">병원명</label>
+                    <input type="text" id="searchClinic" placeholder="병원명 입력">
+                </div>
+                <div class="search-field">
+                    <label for="searchDirector">원장명</label>
+                    <input type="text" id="searchDirector" placeholder="원장명 입력">
+                </div>
+            </div>
+            <div class="search-actions">
+                <button class="search-btn secondary" onclick="resetSearch()">초기화</button>
+                <button class="search-btn primary" onclick="performSearch()">검색</button>
+            </div>
+        </div>
+
+        <div id="searchResultsInfo" style="display: none;"></div>
         <div id="profileList"></div>
     </div>
 
@@ -398,9 +547,16 @@
     </footer>
 
     <script>
-        function loadProfiles() {
+        let allCases = []; // 전체 케이스 저장용
+
+        function loadProfiles(filteredCases = null) {
             const profileList = document.getElementById('profileList');
-            let cases = JSON.parse(localStorage.getItem('dentalCases') || '[]');
+            let cases = filteredCases !== null ? filteredCases : JSON.parse(localStorage.getItem('dentalCases') || '[]');
+
+            // 전체 케이스 저장 (최초 로드 시)
+            if (filteredCases === null) {
+                allCases = cases;
+            }
 
             if (cases.length === 0) {
                 profileList.innerHTML = `
@@ -430,8 +586,9 @@
             });
 
             // localStorage 업데이트
-            if (needsUpdate) {
+            if (needsUpdate && filteredCases === null) {
                 localStorage.setItem('dentalCases', JSON.stringify(cases));
+                allCases = cases; // 업데이트된 케이스 저장
             }
 
             // 최신순 정렬 (표시용)
@@ -448,8 +605,77 @@
                 grid.appendChild(card);
             });
 
+            profileList.innerHTML = ''; // 기존 내용 제거
             profileList.appendChild(grid);
         }
+
+        function performSearch() {
+            const searchNumber = document.getElementById('searchNumber').value.trim().toLowerCase();
+            const searchClinic = document.getElementById('searchClinic').value.trim().toLowerCase();
+            const searchDirector = document.getElementById('searchDirector').value.trim().toLowerCase();
+
+            // 검색어가 모두 비어있는 경우
+            if (!searchNumber && !searchClinic && !searchDirector) {
+                alert('검색할 내용을 입력해주세요.');
+                return;
+            }
+
+            // 필터링
+            const filtered = allCases.filter(profile => {
+                const matchNumber = !searchNumber || (profile.profileNumber && profile.profileNumber.toLowerCase().includes(searchNumber));
+                const matchClinic = !searchClinic || (profile.clinicName && profile.clinicName.toLowerCase().includes(searchClinic));
+                const matchDirector = !searchDirector || (profile.directorName && profile.directorName.toLowerCase().includes(searchDirector));
+
+                return matchNumber && matchClinic && matchDirector;
+            });
+
+            // 검색 결과 정보 표시
+            const resultsInfo = document.getElementById('searchResultsInfo');
+            if (filtered.length === 0) {
+                resultsInfo.innerHTML = '❌ 검색 결과가 없습니다';
+                resultsInfo.style.display = 'block';
+                document.getElementById('profileList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <h2>검색 결과가 없습니다</h2>
+                        <p>다른 검색어로 다시 시도해주세요</p>
+                        <button class="primary-btn" onclick="resetSearch()">초기화</button>
+                    </div>
+                `;
+            } else {
+                resultsInfo.innerHTML = `✅ 총 ${filtered.length}개의 프로필을 찾았습니다`;
+                resultsInfo.style.display = 'block';
+                loadProfiles(filtered);
+            }
+        }
+
+        function resetSearch() {
+            // 검색 필드 초기화
+            document.getElementById('searchNumber').value = '';
+            document.getElementById('searchClinic').value = '';
+            document.getElementById('searchDirector').value = '';
+
+            // 검색 결과 정보 숨김
+            document.getElementById('searchResultsInfo').style.display = 'none';
+
+            // 전체 프로필 다시 로드
+            loadProfiles(null);
+        }
+
+        // Enter 키로 검색 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInputs = ['searchNumber', 'searchClinic', 'searchDirector'];
+            searchInputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            performSearch();
+                        }
+                    });
+                }
+            });
+        });
 
         function createProfileCard(profile) {
             const card = document.createElement('div');
